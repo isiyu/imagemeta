@@ -1,0 +1,21 @@
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: isiyu/imagemeta:02
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "4000:80"
+    networks:
+      - webnet
+networks:
+  webnet:
