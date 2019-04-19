@@ -8,6 +8,8 @@ Requires: python3, docker, pip3, venv
 ### Running Script using Docker
 Docker image is hosted at: https://cloud.docker.com/repository/docker/isiyu/imagemeta/general
 
+*note this repo is missing the client secret needed to authenticate
+
 ##### Launching Docker with interactive shell
 1. Pull the latest docker image :
 `docker pull isiyu/imagemeta:03`
