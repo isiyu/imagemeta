@@ -8,6 +8,7 @@ import argparse
 import json
 import os
 import pickle
+import pprint
 import sys
 import urllib.request
 
@@ -129,7 +130,8 @@ def get_bucket_meta_json( bucket_name, out_path = None ):
         img_meta = get_image_meta(bucket_name, f)
         if img_meta: meta_list.append(img_meta)
 
-    print(meta_list)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(meta_list)
 
     if out_path:
         with open(out_path, 'w') as outfile:
@@ -138,7 +140,7 @@ def get_bucket_meta_json( bucket_name, out_path = None ):
 
 def get_image_meta_json ( file_name, out_path = None):
     """
-        prints metadata json of image 
+        prints metadata json of image
         writes to disk if given a path
     """
     bucket_name = file_name.lstrip('/').split('/')[0]
@@ -148,7 +150,8 @@ def get_image_meta_json ( file_name, out_path = None):
     img_meta = get_image_meta(bucket_name, f)
     if img_meta: meta_list.append(img_meta)
 
-    print(meta_list)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(meta_list)
 
     if out_path:
         with open(out_path, 'w') as outfile:
