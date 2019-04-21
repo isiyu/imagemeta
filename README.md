@@ -47,6 +47,13 @@ imagemeta --bucket my-bucket --write out/my_images_meta.json
 ```
  - acquires metadata of all the images in the bucket and writes to the output json file "out/my_images_meta.json"
 
+##### Tests
+Tests and mock responses are located in the /test directory and can be run with this command
+
+```
+ python -m unittest test.test_imageMetaLib
+```
+
 ## Deploying To Production
 
 ### Code refactor
@@ -81,5 +88,10 @@ Assuming we have not dropped messages because of queue capacity - we can begin q
 Pub/Sub limits: https://cloud.google.com/pubsub/quotas#resource_limits
 
 ### Other considerations
+
+**List of valid extensions** - get a list of valid file extensions to be able to ignore bad inputs 
+
+**stream EXIF data** - investigate if it's possible to just stream metadata from cloud storage to compute instance instead of moving the whole image. This would benefit throughput by needing to transfer less data per work item. Dependent on image formats and if exif metadata is stored at head or tail of file and cloud provider's ability to stream portions of an object 
+
 ##### Google Cloud Functions
 Since this service wouldn't require state and is a fairly uncomplicated operation, using Google Cloud Functions instead of starting a compute stack was considered. The advantage being not having to manage a stack. Limits for that service are listed [here](https://cloud.google.com/functions/quotas#scalability) - since it is a managed service, there is less control during heavy load.
