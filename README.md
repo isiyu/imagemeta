@@ -47,6 +47,13 @@ imagemeta --bucket my-bucket --write out/my_images_meta.json
 ```
  - acquires metadata of all the images in the bucket and writes to the output json file "out/my_images_meta.json"
 
+##### Tests
+Tests and mock responses are located in the /test directory and can be run with this command
+
+```
+ python -m unittest test.test_imageMetaLib
+```
+
 ## Deploying To Production
 
 ### Code refactor
