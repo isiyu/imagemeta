@@ -1,9 +1,9 @@
-from PIL import Image, ExifTags
 from io import BytesIO
 from datetime import datetime
 from google_auth_oauthlib.flow import InstalledAppFlow
 from pkg_resources import resource_filename
 
+import exifread
 import argparse
 import json
 import os
@@ -105,32 +105,24 @@ def get_image_meta( bucket, image ):
         print("Could not access file - /%s/%s" % (bucket, image))
         return None
 
-    img = Image.open(BytesIO(imgdata.read()))
     img_data = { 'image' : bucket+"/"+image,
                  'exif_metadata' : {}
                 }
+    exif_tags = exifread.process_file(BytesIO(imgdata.read()))
 
-    #no exif metadata on image
-    if img._getexif() == None:
-        return img_data
-
-    img_data['exif_metadata'] = { ExifTags.TAGS.get(k, k): v \
-                                    for k, v in img._getexif().items() \
-                                    if not isinstance(v, (bytes, bytearray)) }
-    # recast tuples (bytes type) as lists for json encoding
-    for k, val in img_data['exif_metadata'].items():
-        if k == 'GPSInfo':
-            gps_data = {}
-            for t in val:
-                sub_decoded = ExifTags.GPSTAGS.get(t, t)
-                gps_data[sub_decoded] = val[t].decode()
-            img_data['exif_metadata'][k] = gps_data
-        if isinstance( val , (tuple)):
-            img_data['exif_metadata'][k] = str(val)
+    #put printable str tag values into exif_metadata dictionary
+    for tag in exif_tags.keys():
+        if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+            img_data['exif_metadata'][tag] = exif_tags[tag].printable
 
     return img_data
 
+
 def get_bucket_meta_json( bucket_name, out_path = None ):
+    """
+        prints metadata json of images in given bucket
+        writes to disk if given a path
+    """
     bucket_files = list_bucket(bucket_name)
     meta_list = []
     for f in bucket_files:
@@ -145,6 +137,10 @@ def get_bucket_meta_json( bucket_name, out_path = None ):
     return
 
 def get_image_meta_json ( file_name, out_path = None):
+    """
+        prints metadata json of image 
+        writes to disk if given a path
+    """
     bucket_name = file_name.lstrip('/').split('/')[0]
     f = file_name.split('/')[-1]
 
